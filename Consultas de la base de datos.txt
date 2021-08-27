@@ -1,0 +1,40 @@
+SELECT ID_MaterialConstruccion AS ID,Nombre_Material AS NOMBRE,Precio_Unidad AS PRECIO
+From MaterialConstruccion  
+Where Importado = 'No' ORDER BY Nombre_Material ASC
+
+
+
+SELECT p.ID_Proyecto AS ID , p.Constructora , p.Ciudad ,p.Clasificacion , t.Estrato , l.Nombre || ' ' || l.Primer_Apellido ||' '|| l.Segundo_Apellido as LIDER 
+From Proyecto p 
+Join Tipo t using(ID_Tipo)
+Join Lider l using(ID_Lider)
+WHERE  Banco_Vinculado = 'Davivienda' 
+ORDER BY p.Fecha_Inicio DESC , p.Ciudad ASC , p.Constructora
+
+
+
+SELECT Ciudad, Clasificacion , COUNT(ID_Proyecto) TOTAL, MIN( Fecha_Inicio) VIEJO,MAX(Fecha_Inicio) RECIENTE
+FROM Proyecto 
+WHERE Clasificacion IN ('Casa Campestre','Condominio')
+GROUP By Ciudad, Clasificacion 
+
+
+
+
+SELECT P.ID_Proyecto,sum(c.Cantidad * mc.Precio_Unidad) as VALOR
+FROM Proyecto p 
+Join Compra c using(ID_Proyecto)
+Join MaterialConstruccion mc  using(ID_MaterialConstruccion)
+WHERE c.Pagado = 'Si' 
+GROUP BY  p.ID_Proyecto 
+HAVING SUM(c.Cantidad * mc.Precio_Unidad) > 50000
+ORDER BY VALOR DESC
+ 
+SELECT   l.Nombre || ' ' || l.Primer_Apellido ||' '|| l.Segundo_Apellido as LIDER, SUM(c.Cantidad * mc.Precio_Unidad) as VALOR 
+FROM Proyecto p 
+Join Lider l using(ID_Lider)
+join Compra c using(ID_Proyecto)
+Join MaterialConstruccion mc using(ID_MaterialConstruccion)
+group by Lider 
+ORDER by VALOR ASC
+LIMIT 10
